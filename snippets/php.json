@@ -1,0 +1,20 @@
+{
+  "hello": {
+    "prefix": "hello",
+    "body": ["echo 'Hello, World! . <br>';"],
+    "description": "输出 Hello, World!"
+  },
+"php": {
+    "prefix": "php",
+    "body": [
+      "<?php",
+      "$1"
+    ],
+    "description": "PHP 模版标签"
+  },
+  "br": {
+    "prefix": "br",
+    "body": ["echo '$1 . <br>';"],
+    "description": "换行输出"
+  }
+}
