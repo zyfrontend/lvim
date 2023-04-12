@@ -2,6 +2,7 @@
  THESE ARE EXAMPLE CONFIGS FEEL FREE TO CHANGE TO WHATEVER YOU WANT
  `lvim` is the global options object
 ]]
+
 -- vim options
 vim.opt.shiftwidth = 2
 vim.opt.tabstop = 2
@@ -10,9 +11,9 @@ vim.opt.relativenumber = true
 -- general
 lvim.log.level = "info"
 lvim.format_on_save = {
-  enabled = true,
-  pattern = "*.lua",
-  timeout = 1000,
+	enabled = true,
+	pattern = "*",
+	timeout = 1000,
 }
 -- to disable icons and use a minimalist setup, uncomment the following
 -- lvim.use_icons = false
@@ -22,14 +23,14 @@ lvim.leader = "space"
 -- add your own keymapping
 lvim.keys.normal_mode["<C-s>"] = ":w<cr>"
 
-lvim.keys.normal_mode["<S-l>"] = ":BufferLineCycleNext<CR>"
-lvim.keys.normal_mode["<S-h>"] = ":BufferLineCyclePrev<CR>"
-
+-- 保存之后在切换buffer
+lvim.keys.normal_mode["<S-l>"] = ":w<cr>:BufferLineCycleNext<CR>"
+lvim.keys.normal_mode["<S-h>"] = ":w<cr>:BufferLineCyclePrev<CR>"
 -- -- Use which-key to add extra bindings with the leader-key prefix
 -- lvim.builtin.which_key.mappings["W"] = { "<cmd>noautocmd w<cr>", "Save without formatting" }
 -- lvim.builtin.which_key.mappings["P"] = { "<cmd>Telescope projects<CR>", "Projects" }
 
--- -- Change theme settings
+-- -- 主题
 lvim.colorscheme = "onedark"
 
 lvim.builtin.alpha.active = true
@@ -37,6 +38,26 @@ lvim.builtin.alpha.mode = "dashboard"
 lvim.builtin.terminal.active = true
 lvim.builtin.nvimtree.setup.view.side = "left"
 lvim.builtin.nvimtree.setup.renderer.icons.show.git = false
+lvim.builtin.treesitter.autotag.enable = true
+lvim.builtin.treesitter.rainbow.enable = true
+lvim.builtin.treesitter.ensure_installed = {
+	"vim",
+	"lua",
+	"go",
+	"gomod",
+	"javascript",
+	"typescript",
+	"tsx",
+	"http",
+	"html",
+	"css",
+	"markdown",
+	"json",
+	"jsonc",
+	"yaml",
+	"regex",
+	"dockerfile",
+}
 
 -- Automatically install missing parsers when entering buffer
 lvim.builtin.treesitter.auto_install = true
@@ -56,9 +77,7 @@ lvim.builtin.treesitter.auto_install = true
 -- vim.list_extend(lvim.lsp.automatic_configuration.skipped_servers, { "pyright" })
 -- local opts = {} -- check the lspconfig documentation for a list of all possible options
 -- require("lvim.lsp.manager").setup("pyright", opts)
-require('onedark').setup {
-  style = 'deep'
-}
+
 -- ---remove a server from the skipped list, e.g. eslint, or emmet_ls. IMPORTANT: Requires `:LvimCacheReset` to take effect
 -- ---`:LvimInfo` lists which server(s) are skipped for the current filetype
 -- lvim.lsp.automatic_configuration.skipped_servers = vim.tbl_filter(function(server)
@@ -76,36 +95,55 @@ require('onedark').setup {
 -- end
 
 -- -- linters and formatters <https://www.lunarvim.org/docs/languages#lintingformatting>
--- local formatters = require "lvim.lsp.null-ls.formatters"
--- formatters.setup {
---   { command = "stylua" },
---   {
---     command = "prettier",
---     extra_args = { "--print-width", "100" },
---     filetypes = { "typescript", "typescriptreact" },
---   }
--- }
--- local linters = require "lvim.lsp.null-ls.linters"
--- linters.setup {
---   { command = "flake8", filetypes = { "python" } },
---   {
---     command = "shellcheck",
---     args = { "--severity", "warning" },
---   },
--- }
--- local code_actions = require "lvim.lsp.null-ls.code_actions"
--- code_actions.setup {
---   {
---     name = "proselint"
---   },
--- }
+local formatters = require("lvim.lsp.null-ls.formatters")
+formatters.setup({
+	{ filetypes = { "go" }, command = "gofmt" },
+	{ filetypes = { "lua" }, command = "stylua" },
+	{ filetypes = { "javascript", "typescript", "javascriptreact", "typescriptreact" }, command = "prettier" },
+	{ filetypes = { "html", "css", "markdown" }, command = "prettier" },
+})
+local linters = require("lvim.lsp.null-ls.linters")
+linters.setup({
+	{ filetypes = { "go" }, command = "golangci_lint" },
+	{ filetypes = { "markdown" }, command = "markdownlint", args = { "--disable", "MD013" } },
+	{ filetypes = { "javascript", "typescript", "javascriptreact", "typescriptreact" }, command = "eslint" },
+	{ filetypes = { "html" }, command = "tidy" },
+	{ filetypes = { "css" }, command = "stylelint" },
+})
 
--- -- -- Additional Plugins <https://www.lunarvim.org/docs/plugins#user-plugins>
+-- -- Additional Plugins <https://www.lunarvim.org/docs/plugins#user-plugins>
 lvim.plugins = {
-  {
-    'navarasu/onedark.nvim',
-  },
+	{
+		"navarasu/onedark.nvim",
+	},
 }
+
+-- 主题
+require("onedark").setup({
+	style = "deep",
+	-- 代码样式
+	code_style = {
+		comments = "bold",
+		keywords = "none",
+		functions = "bold",
+		strings = "none",
+		variables = "none",
+	},
+	-- Custom Highlights --
+	colors = {},
+	-- Override default colors
+	highlights = {
+		["@comment"] = { fg = "#16a085", fmt = "bold" },
+	},
+	-- Override highlight groups
+
+	-- Plugins Config --
+	diagnostics = {
+		darker = true, -- darker colors for diagnostic
+		undercurl = true, -- use undercurl instead of underline for diagnostics
+		background = true, -- use background color for virtual text
+	},
+})
 
 -- -- Autocommands (`:help autocmd`) <https://neovim.io/doc/user/autocmd.html>
 -- vim.api.nvim_create_autocmd("FileType", {
