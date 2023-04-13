@@ -22,13 +22,18 @@ lvim.format_on_save = {
 lvim.leader = "space"
 -- add your own keymapping
 lvim.keys.normal_mode["<C-s>"] = ":w<cr>"
-
+lvim.builtin.terminal.open_mapping = "<leader>t"
 -- 保存之后在切换buffer
 lvim.keys.normal_mode["<S-l>"] = ":w<cr>:BufferLineCycleNext<CR>"
 lvim.keys.normal_mode["<S-h>"] = ":w<cr>:BufferLineCyclePrev<CR>"
 -- -- Use which-key to add extra bindings with the leader-key prefix
 -- lvim.builtin.which_key.mappings["W"] = { "<cmd>noautocmd w<cr>", "Save without formatting" }
 -- lvim.builtin.which_key.mappings["P"] = { "<cmd>Telescope projects<CR>", "Projects" }
+-- 插入模式下移动光标
+lvim.keys.insert_mode["<C-h>"] = "<Left>"
+lvim.keys.insert_mode["<C-j>"] = "<Down>"
+lvim.keys.insert_mode["<C-k>"] = "<up>"
+lvim.keys.insert_mode["<C-l>"] = "<Right>"
 
 -- -- 主题
 lvim.colorscheme = "onedark"
@@ -66,7 +71,6 @@ lvim.builtin.treesitter.auto_install = true
 
 -- -- always installed on startup, useful for parsers without a strict filetype
 -- lvim.builtin.treesitter.ensure_installed = { "comment", "markdown_inline", "regex" }
-
 -- -- generic LSP settings <https://www.lunarvim.org/docs/languages#lsp-support>
 
 -- --- disable automatic installation of servers
@@ -115,36 +119,74 @@ linters.setup({
 lvim.plugins = {
 	{
 		"navarasu/onedark.nvim",
+		config = function()
+			require("onedark").setup({
+				style = "deep",
+				-- 代码样式
+				code_style = {
+					comments = "bold",
+					keywords = "none",
+					functions = "bold",
+					strings = "none",
+					variables = "none",
+				},
+				-- Custom Highlights --
+				colors = {},
+				-- Override default colors
+				highlights = {
+					["@comment"] = { fg = "#16a085", fmt = "bold" },
+				},
+				-- Override highlight groups
+
+				-- Plugins Config --
+				diagnostics = {
+					darker = true, -- darker colors for diagnostic
+					undercurl = true, -- use undercurl instead of underline for diagnostics
+					background = true, -- use background color for virtual text
+				},
+			})
+		end,
+	},
+	-- 自动保存
+	-- {
+	-- 	"Pocco81/auto-save.nvim",
+	-- 	config = function()
+	-- 		require("auto-save").setup()
+	-- 	end,
+	-- },
+	-- 记住上一次编辑的地方
+	{
+		"ethanholz/nvim-lastplace",
+		event = "BufRead",
+		config = function()
+			require("nvim-lastplace").setup({
+				lastplace_ignore_buftype = { "quickfix", "nofile", "help" },
+				lastplace_ignore_filetype = {
+					"gitcommit",
+					"gitrebase",
+					"svn",
+					"hgcommit",
+				},
+				lastplace_open_folds = true,
+			})
+		end,
+	},
+	-- todo 高亮
+	{
+		"folke/todo-comments.nvim",
+		event = "BufRead",
+		config = function()
+			require("todo-comments").setup()
+		end,
+	},
+	-- 自动闭合html 标签
+	{
+		"windwp/nvim-ts-autotag",
+		config = function()
+			require("nvim-ts-autotag").setup()
+		end,
 	},
 }
-
--- 主题
-require("onedark").setup({
-	style = "deep",
-	-- 代码样式
-	code_style = {
-		comments = "bold",
-		keywords = "none",
-		functions = "bold",
-		strings = "none",
-		variables = "none",
-	},
-	-- Custom Highlights --
-	colors = {},
-	-- Override default colors
-	highlights = {
-		["@comment"] = { fg = "#16a085", fmt = "bold" },
-	},
-	-- Override highlight groups
-
-	-- Plugins Config --
-	diagnostics = {
-		darker = true, -- darker colors for diagnostic
-		undercurl = true, -- use undercurl instead of underline for diagnostics
-		background = true, -- use background color for virtual text
-	},
-})
-
 -- -- Autocommands (`:help autocmd`) <https://neovim.io/doc/user/autocmd.html>
 -- vim.api.nvim_create_autocmd("FileType", {
 --   pattern = "zsh",
