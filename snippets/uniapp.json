@@ -4,10 +4,20 @@
     "body": ["console.log('Hello, World!')"],
     "description": "console log 输出 Hello"
   },
-  "div": {
-    "prefix": "div",
-    "body": ["<div className={'$1'}>$2</div>"],
-    "description": "div 标签"
+  "uload": {
+    "prefix": "view",
+    "body": [
+      "onLoad(async () => {",
+      "  await proxy.$onLaunched",
+      " // ...登录之后的业务",
+      "})",
+    ],
+    "description": "view 标签"
+  },
+  "view": {
+    "prefix": "view",
+    "body": ["<view class={'$1'}>$2</view>"],
+    "description": "view 标签"
   },
   "zs": {
     "prefix": "zs",
